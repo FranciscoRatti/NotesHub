@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Eliminar nota</title>
+  </head>
+  <body>
+    <h1>Se eliminara permatentemente la nota:</h1>
+
+    <form action="#" th:action="@{/notes/remove/{id}(id=${note.id})}" method="post">
+      <table border="1">
+        <thead>
+          <tr>
+            <td>Id</td>
+            <td>Titulo</td>
+            <td>Cuerpo</td>
+            <td>Creado</td>
+            <td>Color</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:object="${note}">
+            <td th:text="*{id}"></td>
+            <td th:text="*{title}"></td>
+            <td th:text="*{body}"></td>
+            <td th:text="*{date}"></td>
+            <td th:text="*{color}"></td>
+          </tr>
+        </tbody>
+      </table>
+      <input type="submit" value="Aceptar"/>
+    </form>
+    <form action="#" th:action="@{/menu}" method="get">
+      <input type="submit" value="Cancelar"/>
+    </form>
+  </body>
+</html>

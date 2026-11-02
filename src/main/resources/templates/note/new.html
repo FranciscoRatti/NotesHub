@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Nueva nota</title>
+  </head>
+  <body>
+    <form action="#" th:action="@{/notes/new}" th:object="${note}" method="post">
+      <table>
+        <tr>
+          <td><input type="text" th:field="*{title}" placeholder="Titulo"></td>
+          <td th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></td>
+        </tr>
+        <tr>
+          <td><input type="text" th:field="*{body}" placeholder="Cuerpo"></td>
+          <td th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></td>
+        </tr>
+      </table>
+      <input type="submit" value="Crear"/>
+    </form>
+    <form action="#" th:action="@{/menu}" method="get">
+      <input type="submit" value="Cancelar"/>
+    </form>
+  </body>
+</html>

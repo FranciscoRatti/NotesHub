@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Menu principal</title>
+  </head>
+  <body>
+    <h1>Notas del usuario <strong sec:authentication="name"></strong></h1>
+    <form th:action="@{/logout}" method="post">
+      <button type="submit">Log out</button>
+    </form>
+
+    <br><br>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <td>Id</td>
+          <td>Titulo</td>
+          <td>Cuerpo</td>
+          <td>Creado</td>
+          <td>Color</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="note : ${notes}">
+          <td th:text="${note.id}"></td>
+          <td th:text="${note.title}"></td>
+          <td th:text="${note.body}"></td>
+          <td th:text="${note.date}"></td>
+          <td th:text="${note.color}"></td>
+          <td>
+            <a th:href="@{/notes/update/{id}(id=${note.id})}">Editar</a>
+          </td>
+          <td>
+            <a th:href="@{/notes/trash/{id}(id=${note.id})}">Enviar a la papelera</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <a th:href="@{/notes/new}">+ Nueva nota</a>
+
+    <br><br>
+
+    <h3>Papelera</h3>
+    <table border="1">
+      <thead>
+        <tr>
+          <td>Id</td>
+          <td>Titulo</td>
+          <td>Cuerpo</td>
+          <td>Creado</td>
+          <td>Color</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="note : ${trash}">
+          <td th:text="${note.id}"></td>
+          <td th:text="${note.title}"></td>
+          <td th:text="${note.body}"></td>
+          <td th:text="${note.date}"></td>
+          <td th:text="${note.color}"></td>
+          <td>
+            <a th:href="@{/notes/restore/{id}(id=${note.id})}">Restaurar</a>
+          </td>
+          <td>
+            <a th:href="@{/notes/remove/{id}(id=${note.id})}">Eliminar</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <a th:href="@{/notes/clean-trash}">Limpiar papelera</a>
+  </body>
+</html>
