@@ -8,4 +8,8 @@ public class NotesHubApplication {
   public static void main(String[] args) {
     SpringApplication.run(NotesHubApplication.class, args);
   }
+
+  public static final byte TOKEN_VALIDATE = 0;
+  public static final byte TOKEN_CHANGE_PASSWORD = 1;
+  public static final byte TOKEN_CHANGE_MAIL = 2;
 }

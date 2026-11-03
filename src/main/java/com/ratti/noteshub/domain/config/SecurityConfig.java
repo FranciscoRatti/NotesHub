@@ -1,4 +1,4 @@
-package com.ratti.noteshub.config;
+package com.ratti.noteshub.domain.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ public class SecurityConfig {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/login", "/logout", "/new-user", "/error").permitAll()
+            .requestMatchers("/login", "/logout", "/users/new", "/error", "/css/**", "/users/validate/**").permitAll()
             .anyRequest().authenticated())
         .formLogin(form -> form
             .loginPage("/login")

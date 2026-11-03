@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuevo usuario</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+  </head>
+  <body class="auth-page">
+    <main class="auth-card">
+      <h1>Nuevo usuario</h1>
+
+      <form action="#" th:action="@{/users/new}" th:object="${appUser}" method="post">
+        <div class="field">
+          <input type="text" name="username" placeholder="Usuario"
+                 aria-label="Usuario" autocomplete="username"/>
+          <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+        </div>
+        <div class="field">
+          <input type="text" name="email" placeholder="Email"
+                 aria-label="Email" autocomplete="email"/>
+          <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+        </div>
+        <div class="field">
+          <input type="password" name="password" placeholder="Contraseña"
+                 aria-label="Contraseña" autocomplete="new-password"/>
+          <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Crear</button>
+      </form>
+
+      <a class="auth-link" th:href="@{/login}">Volver al inicio de sesión</a>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Eliminar nota</title>
+  </head>
+  <body>
+    <h1>Se eliminara permanentemente los elementos de la papelera</h1>
+
+    <form action="#" th:action="@{/notes/clean-trash}" method="post">
+      <input type="submit" value="Aceptar"/>
+    </form>
+    <form action="#" th:action="@{/trash}" method="get">
+      <input type="submit" value="Cancelar"/>
+    </form>
+  </body>
+</html>

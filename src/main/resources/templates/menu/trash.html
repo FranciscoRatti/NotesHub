@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Papelera</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar-title">
+        <a class="icon-btn back-btn" th:href="@{/menu}" title="Volver a mis notas" aria-label="Volver a mis notas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </a>
+        <h1>Papelera</h1>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Con la papelera vacía el botón queda deshabilitado -->
+        <a class="btn btn-ghost" th:unless="${#lists.isEmpty(notes)}"
+           th:href="@{/notes/clean-trash}">Limpiar papelera</a>
+        <button type="button" class="btn btn-ghost" th:if="${#lists.isEmpty(notes)}"
+                disabled>Limpiar papelera</button>
+
+        <!-- Ícono de usuario: siempre el mismo, lleva a la página del usuario -->
+        <a class="user-link" th:href="@{/users/update}" title="Mi cuenta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+          </svg>
+          <span class="user-name" sec:authentication="name"></span>
+        </a>
+      </div>
+    </header>
+
+    <main class="container">
+      <p class="empty" th:if="${#lists.isEmpty(notes)}">
+        La papelera está vacía.
+      </p>
+
+      <div class="notes-grid">
+        <article class="note" th:each="note : ${notes}"
+                 th:style="${!#strings.isEmpty(note.color)} ? 'background: #' + ${note.color} : ''">
+          <div class="note-header">
+            <h2 class="note-title" th:text="${note.title}"></h2>
+
+            <div class="note-actions">
+              <a class="icon-btn" th:href="@{/notes/restore/{id}(id=${note.id})}"
+                 title="Restaurar" aria-label="Restaurar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+              </a>
+              <a class="icon-btn danger" th:href="@{/notes/remove/{id}(id=${note.id})}"
+                 title="Eliminar permanentemente" aria-label="Eliminar permanentemente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                  <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  <path d="M10 11l4 4"></path>
+                  <path d="M14 11l-4 4"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <p class="note-body" th:text="${note.body}"></p>
+          <small class="note-date" th:text="${note.date}"></small>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

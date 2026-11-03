@@ -1,0 +1,448 @@
+/* Fuente: Noto Sans Mono (si no hay internet se usa otra monoespaciada del sistema) */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Mono:wght@400;700&display=swap");
+
+/* ---------- Base ---------- */
+:root {
+  --bg: #2E2E33;
+  --header: #222226;
+  --text: #FFFFFF;
+  --note-text: #111111;
+  --link: #0095c8;
+  --button: #373737;
+  --button-hover: #FFFFFF;
+  --danger: #c0392b;
+  --muted: #6b7280;
+  --radius: 5px;
+  --shadow: 5px 5px 3px rgba(0, 0, 0, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Noto Sans Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 5rem; /* espacio abajo para el botón flotante */
+}
+
+/* ---------- Barra superior ---------- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--header);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.user-link svg {
+  width: 38px;
+  height: 38px;
+  padding: 7px;
+  border-radius: 50%;
+  background: #ACB0B8;
+  transition: background 0.15s;
+}
+
+.user-link:hover svg {
+  background: #9A9DA3;
+}
+
+.user-name {
+  font-size: 0.9rem;
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  display: inline-block;
+  white-space: nowrap;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--button);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 0.9rem;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-primary, .btn-ghost {
+  background: var(--button);
+  color: var(--text);
+}
+
+.btn-primary:hover, .btn-ghost:hover:not(:disabled) {
+  border-color: var(--button-hover);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Botones de ícono (funcionan sobre cualquier color de fondo) */
+.icon-btn {
+  color: var(--note-text);
+}
+.back-btn {
+  color: var(--text);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.icon-btn:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-btn.danger {
+  color: var(--danger);
+}
+
+/* Botón flotante en la esquina inferior izquierda */
+.floating-btn {
+  position: fixed;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--button);
+  border-radius: var(--radius);
+  background: var(--button);
+  color: var(--text);
+  font-size: 0.9rem;
+  text-decoration: none;
+  box-shadow: var(--shadow);
+  transition: background 0.15s;
+}
+
+.floating-btn:hover {
+  border-color: var(--button-hover);
+}
+
+.floating-btn svg {
+  width: 18px;
+  height: 18px;
+  color: var(--danger);
+}
+
+/* ---------- Grilla de notas ---------- */
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: 1rem;
+  border-radius: var(--radius);
+  background: #ffff00; /* color por defecto si la nota no trae uno */
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.note-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.note-title {
+  color: var(--note-text);
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.note-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.15rem;
+}
+
+.note-body {
+  color: var(--note-text);
+  flex: 1;
+  margin: 0;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  /* corta el texto largo a 6 líneas */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  overflow: hidden;
+}
+
+.note-date {
+  display: block;
+  margin-top: 1rem;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.empty {
+  margin-top: 3rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---------- Login / formularios de acceso ---------- */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--header);
+  box-shadow: var(--shadow);
+}
+
+.auth-card h1 {
+  margin: 0 0 1.25rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+.field {
+  margin-bottom: 0.75rem;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 0px transparent;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--note-text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: 2px solid var(--button);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.field-error {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--danger);
+  font-size: 0.8rem;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.alert {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.alert-error {
+  background: #fdecea;
+  color: var(--danger);
+}
+
+.alert-info {
+  background: #e8f0fe;
+  color: var(--button-hover);
+}
+
+.auth-link {
+  display: block;
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--link);
+  font-size: 0.9rem;
+}
+
+/* ---------- Formulario de nota (crear / editar) ---------- */
+.form-card {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0.8rem;
+  border-radius: var(--radius);
+  background: #ffff00; /* color por defecto si la nota no trae uno */
+  box-shadow: var(--shadow);
+}
+
+.form-card textarea {
+  min-height: 220px;
+  resize: vertical;
+}
+
+/* Título y cuerpo sin contorno: se escribe directamente sobre la nota */
+.form-card .field input {
+  font-size: 1.15rem;
+}
+
+.form-card .field input,
+.form-card .field textarea {
+  color: var(--note-text);
+  border: 0;
+  background: transparent;
+  padding: 0.1rem 0.3rem; /* sin padding lateral: el texto se alinea con los errores y los botones */
+}
+
+.form-card .field input:focus,
+.form-card .field textarea:focus {
+  outline: none;
+}
+
+.form-card ::placeholder {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+/* Cancelar legible sobre cualquier color de nota */
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Color chooser: círculo con el color elegido, a la derecha de los botones */
+.color-picker {
+  color: var(--note-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.color-picker input[type="color"] {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker input[type="color"]::-webkit-color-swatch {
+  border: 1px solid var(--note-text);
+  border-radius: 50%;
+}
+
+.color-picker input[type="color"]::-moz-color-swatch {
+  border: 1px solid var(--note-text);
+  border-radius: 50%;
+}
+
+/* ---------- Pantallas chicas ---------- */
+@media (max-width: 520px) {
+  .topbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .topbar h1 {
+    font-size: 1.05rem;
+  }
+
+  .topbar-actions {
+    gap: 0.5rem;
+  }
+
+  .topbar .btn {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .user-name {
+    display: none;
+  }
+
+  .container {
+    padding: 1rem 1rem 5rem;
+  }
+
+  .floating-btn {
+    left: 1rem;
+    bottom: 1rem;
+  }
+}

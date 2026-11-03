@@ -1,4 +1,4 @@
-package com.ratti.noteshub.entity;
+package com.ratti.noteshub.domain.entity;
 
 import java.time.LocalDate;
 
@@ -33,6 +33,7 @@ public class Note {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
+  @NotNull
   @Builder.Default
   @ColumnDefault("'Nueva nota'")
   @NotNull(message = "La nota debe tener un titulo")
@@ -44,9 +45,10 @@ public class Note {
   @Builder.Default
   private LocalDate date = LocalDate.now();
 
+  @NotNull
   @Builder.Default
-  @ColumnDefault("'FFFF00'")
-  private String color = "FFFF00";
+  @ColumnDefault("'ffff00'")
+  private String color = "ffff00";
 
   public boolean verifyColor() {
     if (color.length() != 6)
@@ -54,7 +56,7 @@ public class Note {
 
     for (byte b : color.getBytes()) {
       switch (b) {
-        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F':
+        case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f':
           break;
         default:
           return false;
@@ -66,9 +68,10 @@ public class Note {
 
   @JsonIgnore
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(referencedColumnName = "username")
+  @JoinColumn(referencedColumnName = "id")
   private AppUser owner;
 
+  @NotNull
   @Builder.Default
   @ColumnDefault("false")
   private boolean onTrash = false;

@@ -1,12 +1,12 @@
-package com.ratti.noteshub.service;
+package com.ratti.noteshub.application.service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ratti.noteshub.entity.Note;
-import com.ratti.noteshub.repository.NoteRepository;
+import com.ratti.noteshub.domain.entity.Note;
+import com.ratti.noteshub.infraestructure.bbdd.NoteRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -19,11 +19,11 @@ public class NoteService {
   private final AppUserService userService;
 
   public List<Note> findByOwner(String user) {
-    return noteRepo.findByOwner(user);
+    return noteRepo.findByOwner(userService.find(user).getId());
   }
 
   public List<Note> findByOwner(String user, boolean onTrash) {
-    return noteRepo.findByOwner(user, onTrash);
+    return noteRepo.findByOwner(userService.find(user).getId(), onTrash);
   }
 
   public List<Note> getOnTrash() {
@@ -35,14 +35,13 @@ public class NoteService {
   }
 
   public Note findByOwnerAndId(long id, String user) {
-    return noteRepo.findByOwnerAndId(id, user)
+    return noteRepo.findByOwnerAndId(userService.find(user).getId(), id)
         .orElseThrow(() -> new NullPointerException("Note with id " + id + " not exist"));
   }
 
   public void insert(Note note, String owner) {
     note.setDate(LocalDate.now());
     note.setOwner(userService.find(owner));
-    note.setColor("FFFF00");
     noteRepo.save(note);
   }
 

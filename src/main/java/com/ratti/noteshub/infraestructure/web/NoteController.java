@@ -1,16 +1,17 @@
-package com.ratti.noteshub.controller;
+package com.ratti.noteshub.infraestructure.web;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ratti.noteshub.entity.Note;
-import com.ratti.noteshub.service.NoteService;
+import com.ratti.noteshub.application.service.NoteService;
+import com.ratti.noteshub.domain.entity.Note;
 
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -32,8 +33,11 @@ public class NoteController {
   @PostMapping("/new")
   public String insert(Authentication auth, @Valid Note note, BindingResult errors) {
     if (!errors.hasErrors()) {
-      noteService.insert(note, auth.getName());
-      return "redirect:/menu";
+      if (note.verifyColor()) {
+        noteService.insert(note, auth.getName());
+        return "redirect:/menu";
+      }
+      errors.addError(new FieldError("note", "color", "El color no es un valor valido"));
     }
     return "note/new";
   }
@@ -49,8 +53,11 @@ public class NoteController {
   @PostMapping("/update/{id}")
   public String udpate(@PathVariable long id, @Valid Note note, BindingResult errors) {
     if (!errors.hasErrors()) {
-      noteService.update(id, note);
-      return "redirect:/menu";
+      if (note.verifyColor()) {
+        noteService.update(id, note);
+        return "redirect:/menu";
+      }
+      errors.addError(new FieldError("note", "color", "El color no es un valor valido"));
     }
     return "note/update";
   }
@@ -82,19 +89,19 @@ public class NoteController {
   @PostMapping("/remove/{id}")
   public String remove(@PathVariable long id) {
     noteService.remove(id);
-    return "redirect:/menu";
+    return "redirect:/trash";
   }
 
   // Limpiar papelera -----------------------------------------------
 
   @GetMapping("/clean-trash")
   public String clean() {
-    return "clean-trash";
+    return "note/clean-trash";
   }
 
   @PostMapping("/clean-trash")
   public String cleanDone() {
     noteService.cleanTrash();
-    return "redirect:/menu";
+    return "redirect:/trash";
   }
 }

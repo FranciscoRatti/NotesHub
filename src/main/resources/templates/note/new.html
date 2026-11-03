@@ -1,24 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Nueva nota</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
   </head>
   <body>
-    <form action="#" th:action="@{/notes/new}" th:object="${note}" method="post">
-      <table>
-        <tr>
-          <td><input type="text" th:field="*{title}" placeholder="Titulo"></td>
-          <td th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></td>
-        </tr>
-        <tr>
-          <td><input type="text" th:field="*{body}" placeholder="Cuerpo"></td>
-          <td th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></td>
-        </tr>
-      </table>
-      <input type="submit" value="Crear"/>
-    </form>
-    <form action="#" th:action="@{/menu}" method="get">
-      <input type="submit" value="Cancelar"/>
-    </form>
+    <header class="topbar">
+      <h1>Mis notas</h1>
+
+      <div class="topbar-actions">
+        <!-- Ícono de usuario: siempre el mismo, lleva a la página del usuario -->
+        <a class="user-link" th:href="@{/profile}" title="Mi cuenta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+          </svg>
+          <span class="user-name" sec:authentication="name"></span>
+        </a>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- El color se guarda en hexadecimal sin "#", por eso el th:style se lo agrega -->
+      <form class="form-card" action="#" th:action="@{/notes/new}" th:object="${note}" method="post"
+            th:style="${!#strings.isEmpty(note.color)} ? 'background-color: #' + ${note.color} : ''">
+
+        <div class="field">
+          <input type="text" th:field="*{title}" placeholder="Título" aria-label="Título">
+          <small class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></small>
+        </div>
+
+        <div class="field">
+          <textarea th:field="*{body}" placeholder="Cuerpo" aria-label="Cuerpo"></textarea>
+          <small class="field-error" th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></small>
+        </div>
+
+        <!-- Acá se guarda el color elegido (hex sin "#"); lo completa el script de abajo -->
+        <input type="hidden" th:field="*{color}">
+        <small class="field-error" th:if="${#fields.hasErrors('color')}" th:errors="*{color}"></small>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Crear</button>
+          <a class="btn btn-ghost" th:href="@{/menu}">Cancelar</a>
+
+          <label class="color-picker">
+            Color
+            <input type="color" id="color-picker"
+                   th:value="${!#strings.isEmpty(note.color)} ? '#' + ${note.color} : '#ffff00'">
+          </label>
+        </div>
+      </form>
+    </main>
+
+    <script>
+      // Color chooser: pinta la nota con el color elegido y guarda el valor en hex sin "#"
+      (function () {
+        var picker = document.getElementById('color-picker');
+        var field = document.querySelector('input[name="color"]');
+        var card = document.querySelector('.form-card');
+
+        function update() {
+          field.value = picker.value.replace('#', '');
+          card.style.backgroundColor = picker.value;
+        }
+
+        picker.addEventListener('input', update);
+        update();
+      })();
+    </script>
   </body>
 </html>

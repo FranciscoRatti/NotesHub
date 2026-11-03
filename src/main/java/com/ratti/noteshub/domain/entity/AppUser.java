@@ -1,4 +1,4 @@
-package com.ratti.noteshub.entity;
+package com.ratti.noteshub.domain.entity;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,6 +35,11 @@ public class AppUser {
   @Length(min = 3, max = 20, message = "Campo requerido")
   @Column(length = 20, unique = true)
   private String username;
+
+  @NotNull
+  @Email(message = "Mail no valido")
+  @Column(length = 100, unique = true)
+  private String email;
 
   @NotNull
   @Length(min = 8, max = 100, message = "Campo requerido")

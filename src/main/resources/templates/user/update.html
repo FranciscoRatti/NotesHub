@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Editar usuario</title>
+  </head>
+  <body>
+    <h1>Editar usuario</h1>
+
+    <form action="#" th:action="@{/users/update}" th:object="${appUser}" method="post">
+      <input type="hidden" th:field="*{email}" th:value="*{email}">
+      <input type="hidden" th:field="*{password}" th:value="*{password}">
+      <input type="hidden" th:field="*{date}" th:value="*{date}">
+      <table>
+        <tr>
+          <td><input type="text" th:field="*{username}" placeholder="Usuario"></td>
+          <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></td>
+        </tr>
+        <tr>
+          <td><input type="submit" value="Guardar cambios"/></td>
+        </tr>
+      </table>
+    </form>
+    <form action="#" th:action="@{/menu}" method="get">
+      <input type="submit" value="Cancelar"/>
+    </form>
+  </body>
+</html>

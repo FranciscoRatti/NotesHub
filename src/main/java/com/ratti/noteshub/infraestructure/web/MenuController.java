@@ -1,4 +1,4 @@
-package com.ratti.noteshub.controller;
+package com.ratti.noteshub.infraestructure.web;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.ratti.noteshub.service.NoteService;
+import com.ratti.noteshub.application.service.NoteService;
 
 import lombok.AllArgsConstructor;
 
@@ -24,8 +24,16 @@ public class MenuController {
   public String menu(Authentication auth, Model model) {
     if (auth.isAuthenticated()) {
       model.addAttribute("notes", noteService.findByOwner(auth.getName(), false));
-      model.addAttribute("trash", noteService.findByOwner(auth.getName(), true));
-      return "menu";
+      return "menu/menu";
+    }
+    return "redirect:/login";
+  }
+
+  @GetMapping("/trash")
+  public String trash(Authentication auth, Model model) {
+    if (auth.isAuthenticated()) {
+      model.addAttribute("notes", noteService.findByOwner(auth.getName(), true));
+      return "menu/trash";
     }
     return "redirect:/login";
   }

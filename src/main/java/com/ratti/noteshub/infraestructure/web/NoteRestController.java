@@ -1,4 +1,4 @@
-package com.ratti.noteshub.controller.rest;
+package com.ratti.noteshub.infraestructure.web;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ratti.noteshub.entity.Note;
-import com.ratti.noteshub.service.NoteService;
+import com.ratti.noteshub.application.service.NoteService;
+import com.ratti.noteshub.domain.entity.Note;
 
 import lombok.AllArgsConstructor;
 
