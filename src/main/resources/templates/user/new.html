@@ -14,17 +14,17 @@
       <form action="#" th:action="@{/users/new}" th:object="${appUser}" method="post">
         <div class="field">
           <input type="text" name="username" placeholder="Usuario"
-                 aria-label="Usuario" autocomplete="username"/>
+            aria-label="Usuario" autocomplete="username"/>
           <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
         </div>
         <div class="field">
           <input type="text" name="email" placeholder="Email"
-                 aria-label="Email" autocomplete="email"/>
+            aria-label="Email" autocomplete="email"/>
           <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
         </div>
         <div class="field">
           <input type="password" name="password" placeholder="Contraseña"
-                 aria-label="Contraseña" autocomplete="new-password"/>
+            aria-label="Contraseña" autocomplete="new-password"/>
           <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Crear</button>

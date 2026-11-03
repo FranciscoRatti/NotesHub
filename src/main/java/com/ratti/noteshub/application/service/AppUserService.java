@@ -28,8 +28,10 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class AppUserService implements UserDetailsService {
   private static final Logger out = LoggerFactory.getLogger(AppUserService.class);
-  @Value("${app.validatio.max-wait}")
-  private int maxWait;
+  @Value("${app.validatio.max-wait-validation}")
+  private int maxWaitValidation;
+  @Value("${app.validatio.max-wait-change-password}")
+  private int maxWaitChangePassword;
 
   private final MailManager mailManager;
   private final PasswordEncoder encoder;
@@ -63,14 +65,31 @@ public class AppUserService implements UserDetailsService {
   }
 
   public boolean existByEmail(String email) {
-    return userRepo.findByEmail(email).isPresent();
+    Optional<AppUser> userOptional = userRepo.findByEmail(email);
+    if (userOptional.isPresent()) {
+      AppUser user = userOptional.get();
+      if (!tokenRepo.findByUserIdAndType(user.getId(), NotesHubApplication.TOKEN_VALIDATE).isPresent()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean existByTokenAntType(String token, byte type) {
+    return tokenRepo.findByTokenAndType(token, type).isPresent();
   }
 
   public UserDetails loadUserByUsername(String username) {
-    AppUser u = userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
-    if (!tokenRepo.findByUserIdAndType(u.getId(), NotesHubApplication.TOKEN_VALIDATE).isPresent()) {
-      return User.withUsername(u.getUsername())
-          .password(u.getPassword())
+    Optional<AppUser> optional = userRepo.findByUsername(username);
+    AppUser user;
+    if (optional.isPresent()) {
+      user = optional.get();
+    } else {
+      user = userRepo.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
+    }
+    if (!tokenRepo.findByUserIdAndType(user.getId(), NotesHubApplication.TOKEN_VALIDATE).isPresent()) {
+      return User.withUsername(user.getUsername())
+          .password(user.getPassword())
           .build();
     } else {
       throw new UsernameNotFoundException(username);
@@ -82,7 +101,7 @@ public class AppUserService implements UserDetailsService {
     user.setDate(LocalDate.now());
 
     String token = UUID.randomUUID().toString();
-    mailManager.sendEmailVerificationForm(user.getEmail(), token);
+    mailManager.sendVerificationMail(user.getEmail(), token);
     userRepo.save(user);
 
     tokenRepo.save(UserTokens.builder()
@@ -111,11 +130,41 @@ public class AppUserService implements UserDetailsService {
     if (optional.isPresent()) {
       UserTokens validation = optional.get();
       tokenRepo.deleteById(validation.getId());
-      if (validation.getDate().isBefore(LocalDateTime.now().minusMinutes(maxWait))) {
+      if (validation.getDate().isBefore(LocalDateTime.now().minusMinutes(maxWaitValidation))) {
         userRepo.deleteById(validation.getUser().getId());
         out.info("The token for user '" + validation.getUser().getUsername() + "' was expire");
       } else {
         out.info("Token validate for user'" + validation.getUser().getUsername() + "'");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void recover(String email) {
+    AppUser user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+
+    String token = UUID.randomUUID().toString();
+    mailManager.sendRecoverEmail(email, token);
+
+    tokenRepo.save(UserTokens.builder()
+        .token(token)
+        .date(LocalDateTime.now())
+        .type(NotesHubApplication.TOKEN_CHANGE_PASSWORD)
+        .user(user)
+        .build());
+  }
+
+  public boolean changePassword(String token, String password) {
+    Optional<UserTokens> optional = tokenRepo.findByTokenAndType(token, NotesHubApplication.TOKEN_CHANGE_PASSWORD);
+    if (optional.isPresent()) {
+      UserTokens validation = optional.get();
+      tokenRepo.deleteById(validation.getId());
+      if (validation.getDate().isBefore(LocalDateTime.now().minusMinutes(maxWaitChangePassword))) {
+        out.info("The token for user '" + validation.getUser().getUsername() + " ' was expire");
+      } else {
+        userRepo.changePassword(validation.getUser().getId(), encoder.encode(password));
+        out.info("Password changed for user '" + validation.getUser().getUsername() + "'");
         return true;
       }
     }

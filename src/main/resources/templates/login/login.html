@@ -16,17 +16,18 @@
 
       <form th:action="@{/login}" method="post">
         <div class="field">
-          <input type="text" name="username" placeholder="Usuario"
-                 aria-label="Username" autocomplete="username"/>
+          <input type="text" name="username" placeholder="Email o usuario"
+            aria-label="Username" autocomplete="username"/>
         </div>
         <div class="field">
           <input type="password" name="password" placeholder="Contraseña"
-                 aria-label="Password" autocomplete="current-password"/>
+            aria-label="Password" autocomplete="current-password"/>
         </div>
         <input type="submit" value="Enviar" class="btn btn-primary btn-block"/>
       </form>
 
       <a class="auth-link" th:href="@{/users/new}">Registrarse</a>
+      <a class="auth-link" th:href="@{/users/recover}">Recuperar cuenta</a>
     </main>
   </body>
 </html>

@@ -13,18 +13,21 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.ratti.noteshub.NotesHubApplication;
 import com.ratti.noteshub.application.service.AppUserService;
 import com.ratti.noteshub.application.service.NoteService;
-import com.ratti.noteshub.domain.entity.UserTokens;
 import com.ratti.noteshub.domain.entity.Note;
+import com.ratti.noteshub.domain.entity.UserTokens;
 
 @Configuration
 @EnableAsync
 @EnableScheduling
 public class SchedulingConfig {
   private static final Logger out = LoggerFactory.getLogger(SchedulingConfig.class);
-  @Value("${app.validatio.max-wait}")
-  private int maxWait;
+  @Value("${app.validatio.max-wait-validation}")
+  private int maxWaitValidation;
+  @Value("${app.validatio.max-wait-change-password}")
+  private int maxWaitChangePassword;
 
   private final NoteService noteService;
   private final AppUserService userService;
@@ -54,18 +57,34 @@ public class SchedulingConfig {
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   public void checkValidationTokens() {
     if (userService.count() > 0) {
+      int deleteTokens = 0;
       int deleteUsers = 0;
-      LocalDateTime minutesBefore = LocalDateTime.now().minusMinutes(maxWait);
+      LocalDateTime minutesBeforeValidation = LocalDateTime.now().minusMinutes(maxWaitValidation);
+      LocalDateTime minutesBeforeChangePassword = LocalDateTime.now().minusMinutes(maxWaitChangePassword);
 
       for (UserTokens validation : userService.allTokens()) {
-        if (validation.getDate().isBefore(minutesBefore)) {
-          userService.removeToken(validation.getId());
-          userService.remove(validation.getUser().getId());
-          deleteUsers++;
+        switch (validation.getType()) {
+          case NotesHubApplication.TOKEN_VALIDATE -> {
+            if (validation.getDate().isBefore(minutesBeforeValidation)) {
+              userService.removeToken(validation.getId());
+              deleteTokens++;
+
+              userService.remove(validation.getUser().getId());
+              deleteUsers++;
+            }
+          }
+
+          case NotesHubApplication.TOKEN_CHANGE_PASSWORD -> {
+            if (validation.getDate().isBefore(minutesBeforeChangePassword)) {
+              userService.removeToken(validation.getId());
+              deleteTokens++;
+            }
+          }
         }
       }
 
-      out.info("Tokens was checked, " + deleteUsers + " users were deleted");
+      out.info(
+          "Tokens was checked, " + deleteTokens + " tokens were deleted and " + deleteUsers + " users were deleted");
     }
   }
 }

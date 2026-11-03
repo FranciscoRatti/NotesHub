@@ -17,7 +17,7 @@
         <!-- Ícono de usuario: siempre el mismo, lleva a la página del usuario -->
         <a class="user-link" th:href="@{/users/update}" title="Mi cuenta">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
           </svg>
@@ -33,22 +33,22 @@
 
       <div class="notes-grid">
         <article class="note" th:each="note : ${notes}"
-                 th:style="${!#strings.isEmpty(note.color)} ? 'background: #' + ${note.color} : ''">
+          th:style="${!#strings.isEmpty(note.color)} ? 'background: #' + ${note.color} : ''">
           <div class="note-header">
             <h2 class="note-title" th:text="${note.title}"></h2>
 
             <div class="note-actions">
               <a class="icon-btn" th:href="@{/notes/update/{id}(id=${note.id})}"
-                 title="Editar" aria-label="Editar">
+                title="Editar" aria-label="Editar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
                 </svg>
               </a>
               <a class="icon-btn danger" th:href="@{/notes/trash/{id}(id=${note.id})}"
-                 title="Enviar a la papelera" aria-label="Enviar a la papelera">
+                title="Enviar a la papelera" aria-label="Enviar a la papelera">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                   <path d="M10 11v6"></path>
@@ -68,7 +68,7 @@
     <!-- Acceso a la papelera: fijo en la esquina inferior izquierda -->
     <a class="floating-btn" th:href="@{/trash}">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polyline points="3 6 5 6 21 6"></polyline>
         <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
         <path d="M10 11v6"></path>

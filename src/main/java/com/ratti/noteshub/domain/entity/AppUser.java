@@ -31,18 +31,18 @@ public class AppUser {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @NotNull
-  @Length(min = 3, max = 20, message = "Campo requerido")
+  @NotNull(message = "Campo requerido")
+  @Length(min = 3, max = 20, message = "Usuario muy corto")
   @Column(length = 20, unique = true)
   private String username;
 
-  @NotNull
-  @Email(message = "Mail no valido")
+  @NotNull(message = "Campo requerido")
+  @Email(message = "Email no valido")
   @Column(length = 100, unique = true)
   private String email;
 
-  @NotNull
-  @Length(min = 8, max = 100, message = "Campo requerido")
+  @NotNull(message = "Campo requerido")
+  @Length(min = 8, max = 100, message = "Contraseña muy corta")
   @Column(length = 100)
   private String password;
 

@@ -24,7 +24,7 @@ public class MailManager {
   private String from;
 
   @Async
-  public void sendEmailVerificationForm(String email, String token) {
+  public void sendVerificationMail(String email, String token) {
     try {
       MimeMessage msg = sender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
@@ -32,6 +32,23 @@ public class MailManager {
       helper.setTo(email);
       helper.setSubject("Verificacion");
       helper.setText("<a href=http://localhost:8080/validate/" + token + ">Validar email</a>", true);
+
+      sender.send(msg);
+      logger.info("Mail send to " + email);
+    } catch (MessagingException | MailException e) {
+      System.err.println(e);
+    }
+  }
+
+  @Async
+  public void sendRecoverEmail(String email, String token) {
+    try {
+      MimeMessage msg = sender.createMimeMessage();
+      MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
+      helper.setFrom(from);
+      helper.setTo(email);
+      helper.setSubject("Cambiar contraseña");
+      helper.setText("<a href=http://localhost:8080/users/recover/" + token + ">Cambiar contraseña</a>", true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);

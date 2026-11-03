@@ -10,7 +10,8 @@
   --link: #0095c8;
   --button: #373737;
   --button-hover: #FFFFFF;
-  --danger: #c0392b;
+  --danger: #FF0909;
+  --alert: #FFE500;
   --muted: #6b7280;
   --radius: 5px;
   --shadow: 5px 5px 3px rgba(0, 0, 0, 0.25);
@@ -311,20 +312,19 @@ body {
 }
 
 .alert {
+  background: transparent;
   margin-bottom: 1rem;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
+  text-align: center;
+  border-radius: var(--radius);
   font-size: 0.85rem;
 }
 
 .alert-error {
-  background: #fdecea;
   color: var(--danger);
 }
 
 .alert-info {
-  background: #e8f0fe;
-  color: var(--button-hover);
+  color: var(--alert);
 }
 
 .auth-link {

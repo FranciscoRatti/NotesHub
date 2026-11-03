@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Recuperar contraseña</title>
+  </head>
+  <body>
+    Ingrese el email asociado a la cuenta, se le enviara un mail para cambiar la contraseña.
+    <form action="#" th:action="@{/users/recover}" th:object="${emailDTO}" method="post">
+      <input type="email" th:field="*{email}">
+      <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+      <br>
+      <input type="submit" value="Enviar">
+    </form>
+    Dentro de una hora expirara la peticion.
+  </body>
+</html>

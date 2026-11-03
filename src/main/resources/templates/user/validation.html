@@ -4,7 +4,7 @@
     <title>Validacion</title>
   </head>
   <body>
-    <h1 th:if="${validate}">Su mail se valido con exito</h1>
-    <h1 th:if="${!validate}">Algo fallo en la validacion</h1>
+    <h1 th:if="${!hasError}">Su mail se valido con exito</h1>
+    <h1 th:if="${hasError}">El token expiro, vuelva a intentar</h1>
   </body>
 </html>

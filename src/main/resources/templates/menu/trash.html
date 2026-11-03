@@ -12,7 +12,7 @@
       <div class="topbar-title">
         <a class="icon-btn back-btn" th:href="@{/menu}" title="Volver a mis notas" aria-label="Volver a mis notas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
@@ -23,14 +23,14 @@
       <div class="topbar-actions">
         <!-- Con la papelera vacía el botón queda deshabilitado -->
         <a class="btn btn-ghost" th:unless="${#lists.isEmpty(notes)}"
-           th:href="@{/notes/clean-trash}">Limpiar papelera</a>
+          th:href="@{/notes/clean-trash}">Limpiar papelera</a>
         <button type="button" class="btn btn-ghost" th:if="${#lists.isEmpty(notes)}"
-                disabled>Limpiar papelera</button>
+          disabled>Limpiar papelera</button>
 
         <!-- Ícono de usuario: siempre el mismo, lleva a la página del usuario -->
         <a class="user-link" th:href="@{/users/update}" title="Mi cuenta">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="12" cy="8" r="4"></circle>
             <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
           </svg>
@@ -46,23 +46,23 @@
 
       <div class="notes-grid">
         <article class="note" th:each="note : ${notes}"
-                 th:style="${!#strings.isEmpty(note.color)} ? 'background: #' + ${note.color} : ''">
+          th:style="${!#strings.isEmpty(note.color)} ? 'background: #' + ${note.color} : ''">
           <div class="note-header">
             <h2 class="note-title" th:text="${note.title}"></h2>
 
             <div class="note-actions">
               <a class="icon-btn" th:href="@{/notes/restore/{id}(id=${note.id})}"
-                 title="Restaurar" aria-label="Restaurar">
+                title="Restaurar" aria-label="Restaurar">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="1 4 1 10 7 10"></polyline>
                   <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
                 </svg>
               </a>
               <a class="icon-btn danger" th:href="@{/notes/remove/{id}(id=${note.id})}"
-                 title="Eliminar permanentemente" aria-label="Eliminar permanentemente">
+                title="Eliminar permanentemente" aria-label="Eliminar permanentemente">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="3 6 5 6 21 6"></polyline>
                   <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
                   <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
