@@ -15,6 +15,8 @@ import jakarta.mail.internet.MimeMessage;
 public class MailManager {
   private static final Logger logger = org.slf4j.LoggerFactory.getLogger(MailManager.class);
   private final JavaMailSender sender;
+  @Value("${app.url}")
+  private String baseUrl;
 
   public MailManager(JavaMailSender sender) {
     this.sender = sender;
@@ -31,7 +33,7 @@ public class MailManager {
       helper.setFrom(from);
       helper.setTo(email);
       helper.setSubject("Verificacion");
-      helper.setText("<a href=http://localhost:8080/validate/" + token + ">Validar email</a>", true);
+      helper.setText("<a href=" + baseUrl + "/validate/" + token + ">Validar email</a>", true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);
@@ -48,7 +50,7 @@ public class MailManager {
       helper.setFrom(from);
       helper.setTo(email);
       helper.setSubject("Cambiar contraseña");
-      helper.setText("<a href=http://localhost:8080/users/recover/" + token + ">Cambiar contraseña</a>", true);
+      helper.setText("<a href=" + baseUrl + "/users/recover/" + token + ">Cambiar contraseña</a>", true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);
