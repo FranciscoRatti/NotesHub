@@ -6,22 +6,24 @@
   <body>
     <h1>Editar usuario</h1>
 
-    <form action="#" th:action="@{/users/update}" th:object="${appUser}" method="post">
-      <input type="hidden" th:field="*{email}" th:value="*{email}">
-      <input type="hidden" th:field="*{password}" th:value="*{password}">
-      <input type="hidden" th:field="*{date}" th:value="*{date}">
+    <form action="#" th:action="@{/users/update}" th:object="${usernameDTO}" method="post">
       <table>
         <tr>
           <td><input type="text" th:field="*{username}" placeholder="Usuario"></td>
           <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></td>
         </tr>
         <tr>
-          <td><input type="submit" value="Guardar cambios"/></td>
+          <td><input type="submit" value="Cambiar"/></td>
         </tr>
       </table>
     </form>
+    <a th:href="@{/users/change-password}">Cambiar email</a>
+    <span th:text="${message}"></span>
+    <br>
+    <a th:href="@{/users/change-password}">Cambiar contraseña</a>
+    <br>
     <form action="#" th:action="@{/menu}" method="get">
-      <input type="submit" value="Cancelar"/>
+      <input type="submit" value="Volver"/>
     </form>
     <form action="#" th:action="@{/logout}" method="get">
       <input type="submit" value="Salir de la cuenta"/>

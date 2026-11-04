@@ -64,11 +64,15 @@ public class AppUserService implements UserDetailsService {
     return userRepo.findByUsername(username).isPresent();
   }
 
-  public boolean existByEmail(String email) {
+  public boolean existByEmail(String email, boolean checkIfHaveToken) {
     Optional<AppUser> userOptional = userRepo.findByEmail(email);
     if (userOptional.isPresent()) {
-      AppUser user = userOptional.get();
-      if (!tokenRepo.findByUserIdAndType(user.getId(), NotesHubApplication.TOKEN_VALIDATE).isPresent()) {
+      if (checkIfHaveToken) {
+        AppUser user = userOptional.get();
+        if (!tokenRepo.findByUserIdAndType(user.getId(), NotesHubApplication.TOKEN_VALIDATE).isPresent()) {
+          return true;
+        }
+      } else {
         return true;
       }
     }
@@ -112,8 +116,9 @@ public class AppUserService implements UserDetailsService {
         .build());
   }
 
-  public void update(String username, AppUser user) {
-    user.setId(find(username).getId());
+  public void update(String username, String newUsername) {
+    AppUser user = find(username);
+    user.setUsername(newUsername);
     userRepo.save(user);
   }
 
@@ -141,18 +146,26 @@ public class AppUserService implements UserDetailsService {
     return false;
   }
 
-  public void recover(String email) {
+  public void createChangePasswordToken(String email) {
     AppUser user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
 
     String token = UUID.randomUUID().toString();
-    mailManager.sendRecoverEmail(email, token);
+    mailManager.sendChangePasswordEmail(email, token);
 
-    tokenRepo.save(UserTokens.builder()
-        .token(token)
-        .date(LocalDateTime.now())
-        .type(NotesHubApplication.TOKEN_CHANGE_PASSWORD)
-        .user(user)
-        .build());
+    Optional<UserTokens> optional = tokenRepo.findByUserIdAndType(user.getId(),
+        NotesHubApplication.TOKEN_CHANGE_PASSWORD);
+    if (optional.isPresent()) {
+      UserTokens userToken = optional.get();
+      userToken.setDate(LocalDateTime.now());
+      tokenRepo.save(userToken);
+    } else {
+      tokenRepo.save(UserTokens.builder()
+          .token(token)
+          .date(LocalDateTime.now())
+          .type(NotesHubApplication.TOKEN_CHANGE_PASSWORD)
+          .user(user)
+          .build());
+    }
   }
 
   public boolean changePassword(String token, String password) {

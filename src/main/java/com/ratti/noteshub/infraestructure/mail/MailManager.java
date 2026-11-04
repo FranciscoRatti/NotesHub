@@ -33,7 +33,7 @@ public class MailManager {
       helper.setFrom(from);
       helper.setTo(email);
       helper.setSubject("Verificacion");
-      helper.setText("<a href=" + baseUrl + "/validate/" + token + ">Validar email</a>", true);
+      helper.setText("<a href=" + baseUrl + "/users/validate/" + token + ">Validar email</a>", true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);
@@ -43,14 +43,14 @@ public class MailManager {
   }
 
   @Async
-  public void sendRecoverEmail(String email, String token) {
+  public void sendChangePasswordEmail(String email, String token) {
     try {
       MimeMessage msg = sender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
       helper.setFrom(from);
       helper.setTo(email);
       helper.setSubject("Cambiar contraseña");
-      helper.setText("<a href=" + baseUrl + "/users/recover/" + token + ">Cambiar contraseña</a>", true);
+      helper.setText("<a href=" + baseUrl + "/users/change-password/" + token + ">Cambiar contraseña</a>", true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);

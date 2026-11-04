@@ -1,6 +1,7 @@
 # Notes Hub
 
-Aplicacion web para hacer notas desarrollado en **Spring Boot** con una API REST incluida.
+Aplicacion web para hacer notas desarrollado en **Spring Boot** con soporte para moviles,
+incluye una API REST.
 
 ![vista-previa.png](images/vista-previa.png)
 
@@ -13,8 +14,9 @@ Aplicacion web para hacer notas desarrollado en **Spring Boot** con una API REST
 ## Caracteristicas
 
 Utiliza **Spring Security** para la autenticacion, **Hibernate** para el acceso a una base de
-datos **Maria DB**, **Thymeleaf** para como motor de plantillas y **Spring Mail** para enviar
-emails. <br>
+datos **Maria DB**, **Thymeleaf** como motor de plantillas, **Spring Mail** para enviar emails y
+usa un certificado autofirmado para **SSL**.
+<br>
 _Las paginas html fueron diseñadas con ayuda de la IA._
 
 ## Instalacion
@@ -27,12 +29,12 @@ git clone https://github.com/FranciscoRatti/NotesHub.git
 
 Hay ciertas cosas que debes tener en cuenta antes de ejecutar la aplicacion:
 
-- Debes de tener una base de datos. la aplicacion usa Maria DB como gestor de base de datos, si
-  usas otro debes cambiar el driver de Maria por el de tu gestor en las dependencias en el
-  **pom.xml**, podes buscar el driver en los [repositorios de maven](https://mvnrepository.com/).
+- Debes tener una base de datos relacional. la aplicacion usa Maria DB como gestor de base de
+  datos, si usas otro debes cambiar el driver de Maria por el de tu gestor en las dependencias en
+  el [**pom.xml**](pom.xml), podes buscar el driver en los [repositorios de maven](https://mvnrepository.com/).
 - Chequea el archivo **aplication.properties**, hay algunas propiedades que tenes que cambiar:
   - **app.url** debe coincidir con la url para acceder a la aplicacion, si queres que solo
-    se acceda desde tu red podes remplazarlo por _http://\<ip\>:\<puerto\>_.
+    se acceda desde tu red podes remplazarlo por _https://\<ip\>:8443_.
   - **spring.datasource.\*** para configurar la base de datos.
   - **spring.mail.\*** para configurar a que nombre se envian los emails.
 
