@@ -27,30 +27,30 @@ public class MailManager {
 
   @Async
   public void sendVerificationMail(String email, String token) {
-    try {
-      MimeMessage msg = sender.createMimeMessage();
-      MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
-      helper.setFrom(from);
-      helper.setTo(email);
-      helper.setSubject("Verificacion");
-      helper.setText("<a href=" + baseUrl + "/users/validate/" + token + ">Validar email</a>", true);
-
-      sender.send(msg);
-      logger.info("Mail send to " + email);
-    } catch (MessagingException | MailException e) {
-      System.err.println(e);
-    }
+    sendEmail(email, "Verificar email",
+        "<a href=" + baseUrl + "/users/validate/" + token + ">Validar email</a>");
   }
 
   @Async
   public void sendChangePasswordEmail(String email, String token) {
+    sendEmail(email, "Cambiar contraseña",
+        "<a href=" + baseUrl + "/users/change-password/" + token + ">Cambiar contraseña</a>");
+  }
+
+  @Async
+  public void sendChangeEmailEmail(String email, String token) {
+    sendEmail(email, "Cambiar email",
+        "<a href=" + baseUrl + "/users/change-email/" + token + ">Validar email</a>");
+  }
+
+  private void sendEmail(String email, String title, String body) {
     try {
       MimeMessage msg = sender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(msg, true, "UTF-8");
       helper.setFrom(from);
       helper.setTo(email);
-      helper.setSubject("Cambiar contraseña");
-      helper.setText("<a href=" + baseUrl + "/users/change-password/" + token + ">Cambiar contraseña</a>", true);
+      helper.setSubject(title);
+      helper.setText(body, true);
 
       sender.send(msg);
       logger.info("Mail send to " + email);

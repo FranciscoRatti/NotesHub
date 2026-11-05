@@ -40,12 +40,27 @@ public class NoteService {
   }
 
   public void insert(Note note, String owner) {
+    if (note.getTitle() == null)
+      note.setTitle("Nueva nota");
+    if (note.getBody() == null)
+      note.setBody("");
+    if (!note.verifyColor())
+      note.setColor("ffff00");
+
     note.setDate(LocalDate.now());
     note.setOwner(userService.find(owner));
     noteRepo.save(note);
   }
 
   public void update(long id, Note note) {
+    Note original = find(id);
+    if (note.getTitle() == null)
+      note.setTitle(original.getTitle());
+    if (note.getBody() == null)
+      note.setBody(original.getBody());
+    if (!note.verifyColor())
+      note.setColor(original.getColor());
+
     note.setId(id);
     note.setOwner(find(id).getOwner());
     noteRepo.save(note);

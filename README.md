@@ -61,16 +61,34 @@ java -jar noteshub-<version>.jar
 ## API REST
 
 La aplicacion tiene una API REST para ejecutar operaciones sobre las notas del usuario, para la
-autenticacion usa **httb basic**, para probarlo podes usar **curl** ejecutando
-`curl -s -X <METODO> -u "<usuario>":"<contraseña>" <url>`. A continuacion se muestran todos los
-endpoints especificando metodo http:
+autenticacion usa **httb basic**. A continuacion se muestran todos los endpoints especificando
+metodo http:
 
 - `<url>/api/notes/all GET` : Devuelve todas las notas del usuario.
 - `<url>/api/notes/{id} GET` Devuelve la nota con el id.
 - `<url>/api/notes/new PUT` : Crea una nueva nota, se debe incluir en el cuerpo un objeto Note.
-- `<url>/api/notes/update/{id} PUT` : Actualiza el contenido de la nota con el id, se debe enviar un
+- `<url>/api/notes/update/<id> PUT` : Actualiza el contenido de la nota con el id, se debe enviar un
   objeto Note en el cuerpo.
-- `<url>/api/notes/trash/{id} DELETE` : Envia a la papelera la nota con el id.
-- `<url>/api/notes/restore/{id} POST` : Restaura una nota de la papelera.
-- `<url>/api/notes/remove/{id}` : Elimina permanentemente una nota.
+- `<url>/api/notes/trash/<id> DELETE` : Envia a la papelera la nota con el id.
+- `<url>/api/notes/restore/<id> POST` : Restaura una nota de la papelera.
+- `<url>/api/notes/remove/<id>` : Elimina permanentemente una nota.
 - `<url>/api/notes/clean-trash` : Elimina permanentemente todas las notas de la papelera.
+
+Para usar cada uno de estos endpoints en una aplicacion podes usar **curl** de la siguiente manera:
+Para peticiones sin cuerpo:
+
+```
+curl -sk -X <METODO> -u "<usuario>":"<contraseña>" <url>
+```
+
+Para peticiones que incluyen un objeto de tipo Note en el cuerpo:
+
+```
+curl -sk -X <METODO> -u "<usuario>":"<contraseña>" <url> \
+  -H "Content-Type: application/json" -d '{"title":"<titulo>","body":"<cuerpo>","color":"<color>"}'
+```
+
+A la hora de hacer una peticion a **/api/notes/new** los campos que se dejen vacios tomaran el
+valor predeterminado.
+En cambio, a la hora de hacer una peticion a **/api/notes/update/\<id\>** los campos que se dejen
+vacios no se cambiaran.

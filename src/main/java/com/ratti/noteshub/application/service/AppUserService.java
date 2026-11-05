@@ -32,6 +32,8 @@ public class AppUserService implements UserDetailsService {
   private int maxWaitValidation;
   @Value("${app.validatio.max-wait-change-password}")
   private int maxWaitChangePassword;
+  @Value("${app.validatio.max-wait-change-email}")
+  private int maxWaitChangeEmail;
 
   private final MailManager mailManager;
   private final PasswordEncoder encoder;
@@ -60,6 +62,10 @@ public class AppUserService implements UserDetailsService {
     return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
   }
 
+  public String findEmailByUsername(String username) {
+    return userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username)).getEmail();
+  }
+
   public boolean existByUsername(String username) {
     return userRepo.findByUsername(username).isPresent();
   }
@@ -83,7 +89,7 @@ public class AppUserService implements UserDetailsService {
     return tokenRepo.findByTokenAndType(token, type).isPresent();
   }
 
-  public UserDetails loadUserByUsername(String username) {
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     Optional<AppUser> optional = userRepo.findByUsername(username);
     AppUser user;
     if (optional.isPresent()) {
@@ -103,7 +109,6 @@ public class AppUserService implements UserDetailsService {
   public void insert(AppUser user) {
     user.setPassword(encoder.encode(user.getPassword()));
     user.setDate(LocalDate.now());
-
     String token = UUID.randomUUID().toString();
     mailManager.sendVerificationMail(user.getEmail(), token);
     userRepo.save(user);
@@ -139,7 +144,45 @@ public class AppUserService implements UserDetailsService {
         userRepo.deleteById(validation.getUser().getId());
         out.info("The token for user '" + validation.getUser().getUsername() + "' was expire");
       } else {
-        out.info("Token validate for user'" + validation.getUser().getUsername() + "'");
+        out.info("Token validate for user '" + validation.getUser().getUsername() + "'");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public void createChangeEmailToken(String username, String email) {
+    AppUser user = userRepo.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(email));
+    String token = UUID.randomUUID().toString();
+    mailManager.sendChangeEmailEmail(email, token);
+
+    Optional<UserTokens> optional = tokenRepo.findByUserIdAndType(user.getId(), NotesHubApplication.TOKEN_CHANGE_MAIL);
+    if (optional.isPresent()) {
+      UserTokens userToken = optional.get();
+      userToken.setToken(token);
+      userToken.setDate(LocalDateTime.now());
+      tokenRepo.save(userToken);
+    } else {
+      tokenRepo.save(UserTokens.builder()
+          .token(token)
+          .date(LocalDateTime.now())
+          .type(NotesHubApplication.TOKEN_CHANGE_MAIL)
+          .user(user)
+          .newEmail(email)
+          .build());
+    }
+  }
+
+  public boolean changeEmail(String token) {
+    Optional<UserTokens> optional = tokenRepo.findByTokenAndType(token, NotesHubApplication.TOKEN_CHANGE_MAIL);
+    if (optional.isPresent()) {
+      UserTokens validation = optional.get();
+      tokenRepo.deleteById(validation.getId());
+      if (validation.getDate().isBefore(LocalDateTime.now().minusMinutes(maxWaitChangeEmail))) {
+        out.info("The token for user '" + validation.getUser().getUsername() + "' was expire.");
+      } else {
+        userRepo.changeEmail(validation.getUser().getId(), validation.getNewEmail());
+        out.info("Email changed for user '" + validation.getUser().getUsername() + "'");
         return true;
       }
     }
@@ -148,7 +191,6 @@ public class AppUserService implements UserDetailsService {
 
   public void createChangePasswordToken(String email) {
     AppUser user = userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
-
     String token = UUID.randomUUID().toString();
     mailManager.sendChangePasswordEmail(email, token);
 
@@ -156,6 +198,7 @@ public class AppUserService implements UserDetailsService {
         NotesHubApplication.TOKEN_CHANGE_PASSWORD);
     if (optional.isPresent()) {
       UserTokens userToken = optional.get();
+      userToken.setToken(token);
       userToken.setDate(LocalDateTime.now());
       tokenRepo.save(userToken);
     } else {
@@ -174,7 +217,7 @@ public class AppUserService implements UserDetailsService {
       UserTokens validation = optional.get();
       tokenRepo.deleteById(validation.getId());
       if (validation.getDate().isBefore(LocalDateTime.now().minusMinutes(maxWaitChangePassword))) {
-        out.info("The token for user '" + validation.getUser().getUsername() + " ' was expire");
+        out.info("The token for user '" + validation.getUser().getUsername() + "' was expire.");
       } else {
         userRepo.changePassword(validation.getUser().getId(), encoder.encode(password));
         out.info("Password changed for user '" + validation.getUser().getUsername() + "'");

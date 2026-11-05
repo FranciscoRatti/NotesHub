@@ -6,19 +6,23 @@
   <body>
     <h1>Editar usuario</h1>
 
-    <form action="#" th:action="@{/users/update}" th:object="${usernameDTO}" method="post">
-      <table>
+    <table>
+      <form action="#" th:action="@{/users/change-username}" th:object="${usernameDTO}" method="post">
         <tr>
           <td><input type="text" th:field="*{username}" placeholder="Usuario"></td>
+          <td><input type="submit" value="Cambiar"/></td>
           <td th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></td>
         </tr>
+      </form>
+      <form action="#" th:action="@{/users/change-email}" th:object="${emailDTO}" method="post">
         <tr>
+          <td><input type="email" th:field="*{email}" placeholder="Email"></td>
           <td><input type="submit" value="Cambiar"/></td>
+          <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></td>
         </tr>
-      </table>
-    </form>
-    <a th:href="@{/users/change-password}">Cambiar email</a>
-    <span th:text="${message}"></span>
+      </form>
+    </table>
+
     <br>
     <a th:href="@{/users/change-password}">Cambiar contraseña</a>
     <br>

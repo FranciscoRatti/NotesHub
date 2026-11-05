@@ -25,16 +25,6 @@ import lombok.AllArgsConstructor;
 public class NoteRestController {
   private final NoteService noteService;
 
-  public record NoteRequestEntity(String title, String body, String color) {
-    public Note parseNote() {
-      return Note.builder()
-          .title(title)
-          .body(body)
-          .color(color)
-          .build();
-    }
-  }
-
   // Consultar ------------------------------------------------
 
   @GetMapping("/all")
@@ -58,11 +48,8 @@ public class NoteRestController {
   @PutMapping("/new")
   public ResponseEntity<Void> insert(@RequestBody NoteRequestEntity note, Authentication auth) {
     if (auth.isAuthenticated()) {
-      if (note.title.length() > 0) {
-        noteService.insert(note.parseNote(), auth.getName());
-        return ResponseEntity.ok().build();
-      }
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      noteService.insert(note.parseNote(), auth.getName());
+      return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
   }
@@ -72,14 +59,20 @@ public class NoteRestController {
   @PutMapping("/update/{id}")
   public ResponseEntity<Void> update(@PathVariable long id, @RequestBody NoteRequestEntity note, Authentication auth) {
     if (auth.isAuthenticated()) {
-      Note entity = note.parseNote();
-      if (note.title.length() > 0 || !entity.verifyColor()) {
-        noteService.update(id, entity);
-        return ResponseEntity.ok().build();
-      }
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+      noteService.update(id, note.parseNote());
+      return ResponseEntity.ok().build();
     }
     return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+  }
+
+  public record NoteRequestEntity(String title, String body, String color) {
+    public Note parseNote() {
+      return Note.builder()
+          .title(title)
+          .body(body)
+          .color(color)
+          .build();
+    }
   }
 
   // Enviar a la papelera ------------------------------------------------

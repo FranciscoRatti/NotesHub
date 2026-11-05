@@ -18,4 +18,8 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
   @Modifying
   @Query("UPDATE AppUser u SET u.password = ?2 WHERE u.id = ?1")
   void changePassword(long id, String password);
+
+  @Modifying
+  @Query("UPDATE AppUser u SET u.email = ?2 WHERE u.id = ?1")
+  void changeEmail(long id, String email);
 }

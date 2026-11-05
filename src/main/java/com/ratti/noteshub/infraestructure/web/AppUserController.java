@@ -27,6 +27,29 @@ public class AppUserController {
 
   private final AppUserService userService;
 
+  private record UsernameDTO(
+      @NotNull(message = "Campo requerido") @Length(min = 3, message = "Nombre de usuario muy corto") String username) {
+    public UsernameDTO(String username) {
+      this.username = username;
+    }
+  }
+
+  private record EmailDTO(
+      @NotNull(message = "Campo requerido") @Email(message = "Email no valido") String email) {
+    public EmailDTO(String email) {
+      this.email = email;
+    }
+  }
+
+  private record PasswordDTO(
+      @NotNull(message = "Campo requerido") @Length(min = 8, message = "Contraseña muy corta") String password,
+      @NotNull(message = "Campo requerido") @Length(min = 8, message = "Contraseña muy corta") String repeatedPassword) {
+    public PasswordDTO(String password, String repeatedPassword) {
+      this.password = password;
+      this.repeatedPassword = repeatedPassword;
+    }
+  }
+
   // Nuevo usuario ------------------------------------------------
 
   @GetMapping("/new")
@@ -36,7 +59,7 @@ public class AppUserController {
   }
 
   @PostMapping("/new")
-  public String newUser(@Valid AppUser user, BindingResult errors) {
+  public String newUser(@Valid AppUser user, BindingResult errors, Model model) {
     if (!(errors.hasErrors() && !(errors.getErrorCount() == 1 && errors.getFieldError().getField().equals("email")))) {
       if (userService.existByUsername(user.getUsername())) {
         errors.addError(new FieldError("appUser", "username", "El usuario ya esta registrado"));
@@ -44,7 +67,12 @@ public class AppUserController {
         errors.addError(new FieldError("appUser", "email", "El mail ya esta registrado"));
       } else {
         userService.insert(user);
-        return "login/validation";
+        model.addAttribute("message", """
+            Verifique su casilla de mail, se le envio un correo con un formulario para verificar su email. \n
+            Hasta que no se verifique no podra usar la cuenta.
+            Dentro de cinco minutos expirara la solicitud.
+                  """);
+        return "warning/generic-message";
       }
     }
     return "user/new";
@@ -54,8 +82,12 @@ public class AppUserController {
 
   @GetMapping("/validate/{token}")
   public String validate(@PathVariable String token, Model model) {
-    model.addAttribute("hasError", Boolean.valueOf(!userService.validate(token)));
-    return "user/validation";
+    if (userService.validate(token)) {
+      model.addAttribute("message", "Su mail se valido con exito!");
+    } else {
+      model.addAttribute("message", "Algo fallo en la validacion, vuelva a crear un usuario");
+    }
+    return "warning/generic-message";
   }
 
   // Editar ------------------------------------------------
@@ -64,32 +96,62 @@ public class AppUserController {
   public String update(Model model, Authentication auth) {
     if (auth.isAuthenticated()) {
       model.addAttribute("usernameDTO", new UsernameDTO(auth.getName()));
+      model.addAttribute("emailDTO", new EmailDTO(userService.findEmailByUsername(auth.getName())));
       return "user/update";
     }
     return "redirect:/login";
   }
 
-  @PostMapping("/update")
-  public String newUser(@Valid UsernameDTO user, BindingResult errors, Authentication auth) {
-    if (auth.isAuthenticated()) {
-      if (!errors.hasErrors()) {
-        if (!user.username.equals(auth.getName()) && userService.existByUsername(user.username)) {
-          errors.addError(new FieldError("usernameDTO", "username", "El usuario ya esta registrado"));
-        } else {
-          userService.update(auth.getName(), user.username);
-          return "redirect:/logout";
-        }
+  // Cambiar usuario ------------------------------------------------
+
+  @PostMapping("/change-username")
+  public String changeUsername(@Valid UsernameDTO user, BindingResult errors, Authentication auth, Model model) {
+    if (user.username.equals(auth.getName())) {
+      return "redirect:/users/update";
+    }
+
+    if (!errors.hasErrors()) {
+      if (!user.username.equals(auth.getName()) && userService.existByUsername(user.username)) {
+        errors.addError(new FieldError("usernameDTO", "username", "El usuario ya esta registrado"));
+      } else {
+        userService.update(auth.getName(), user.username);
+        return "redirect:/logout";
       }
-      return "user/update";
     }
-    return "redirect:/login";
+
+    model.addAttribute("usernameDTO", new UsernameDTO(auth.getName()));
+    model.addAttribute("emailDTO", new EmailDTO(userService.findEmailByUsername(auth.getName())));
+    return "user/update";
   }
 
-  private record UsernameDTO(
-      @NotNull(message = "Campo requerido") @Length(min = 3, message = "Nombre de usuario muy corto") String username) {
-    public UsernameDTO(String username) {
-      this.username = username;
+  // Cambiar email ------------------------------------------------
+
+  @PostMapping("/change-email")
+  public String changeEmail(@Valid EmailDTO email, BindingResult errors, Model model, Authentication auth) {
+    if (email.email.equals(userService.findEmailByUsername(auth.getName()))) {
+      return "redirect:/users/update";
     }
+
+    if (!errors.hasErrors()) {
+      if (userService.existByEmail(email.email, true)) {
+        errors.addError(new FieldError("emailDTO", "email", "El email ya esta registrado"));
+      } else {
+        userService.createChangeEmailToken(auth.getName(), email.email);
+        model.addAttribute("message",
+            "Verifique su casilla de mail, se le envio un correo con un formulario para verificar su email.");
+        return "warning/generic-message";
+      }
+    }
+
+    model.addAttribute("usernameDTO", new UsernameDTO(auth.getName()));
+    model.addAttribute("emailDTO", new EmailDTO(userService.findEmailByUsername(auth.getName())));
+    return "user/update";
+  }
+
+  @GetMapping("/change-email/{token}")
+  public String changeEmail(@PathVariable String token, Model model) {
+    userService.changeEmail(token);
+    return "redirect:/menu";
   }
 
   // Cambiar contraseña ------------------------------------------------
@@ -118,20 +180,15 @@ public class AppUserController {
     return "user/change-password";
   }
 
-  private record EmailDTO(
-      @NotNull(message = "Campo requerido") @Email(message = "Email no valido") String email) {
-    public EmailDTO(String email) {
-      this.email = email;
-    }
-  }
-
   @GetMapping("/change-password/{token}")
   public String changePassword(@PathVariable String token, Model model) {
-    model.addAttribute("hasError",
-        Boolean.valueOf(!userService.existByTokenAntType(token, NotesHubApplication.TOKEN_CHANGE_PASSWORD)));
-    model.addAttribute("passwordDTO", new PasswordDTO("", ""));
-    model.addAttribute("token", token);
-    return "user/change-password-form";
+    if (userService.existByTokenAntType(token, NotesHubApplication.TOKEN_CHANGE_MAIL)) {
+      model.addAttribute("passwordDTO", new PasswordDTO("", ""));
+      model.addAttribute("token", token);
+      return "user/change-password-form";
+    }
+    model.addAttribute("message", "El token expiro");
+    return "warning/generic-message";
   }
 
   @PostMapping("/change-password/{token}")
@@ -141,29 +198,17 @@ public class AppUserController {
     model.addAttribute("token", token);
 
     if (userService.existByTokenAntType(token, NotesHubApplication.TOKEN_CHANGE_PASSWORD)) {
-      model.addAttribute("hasError", false);
       if (!errors.hasErrors()) {
         if (password.password.equals(password.repeatedPassword)) {
           userService.changePassword(token, password.password);
           if (auth != null && auth.isAuthenticated()) {
-            return "redirect:/menu";
+            return "redirect:/logout";
           }
           return "redirect:/login";
         }
         errors.addError(new FieldError("passwordDTO", "repeatedPassword", "Las contraseñas no coinciden"));
       }
-    } else {
-      model.addAttribute("hasError", true);
     }
     return "user/change-password-form";
-  }
-
-  private record PasswordDTO(
-      @NotNull(message = "Campo requerido") @Length(min = 8, message = "Contraseña muy corta") String password,
-      @NotNull(message = "Campo requerido") @Length(min = 8, message = "Contraseña muy corta") String repeatedPassword) {
-    public PasswordDTO(String password, String repeatedPassword) {
-      this.password = password;
-      this.repeatedPassword = repeatedPassword;
-    }
   }
 }

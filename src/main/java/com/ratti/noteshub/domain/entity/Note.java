@@ -51,6 +51,8 @@ public class Note {
   private String color = "ffff00";
 
   public boolean verifyColor() {
+    if (color == null)
+      return false;
     if (color.length() != 6)
       return false;
 
